@@ -194,15 +194,51 @@ python server.py
 **Releasing a new version:**
 
 ```bash
+# Bump version in pyproject.toml, commit, then:
 git tag v1.0.1
 git push origin v1.0.1
 ```
 
-This triggers the Release workflow which:
-1. Runs tests
-2. Builds the wheel
-3. Creates a GitHub Release with changelog
-4. Publishes to PyPI via OIDC trusted publishing (one-time setup on pypi.org)
+The Release workflow will:
+1. Run the full test suite (gates the release)
+2. Build the wheel + sdist
+3. Create a GitHub Release with auto-generated changelog
+4. Publish to PyPI via OIDC trusted publishing
+
+**One-time PyPI trusted publishing setup** (no API token needed):
+1. Create the project on [pypi.org](https://pypi.org)
+2. Go to **Manage → Publishing → Add publisher**
+   - Owner: `subzone`, Repo: `cloud-data-mcp`, Workflow: `release.yml`
+3. Add a `pypi` environment in GitHub repo **Settings → Environments**
+
+---
+
+## Project Structure
+
+```
+cloud-data-mcp/
+├── src/
+│   ├── app.py               # FastMCP server setup + main()
+│   ├── config.py            # Settings (pydantic-settings, reads .env)
+│   ├── engine/
+│   │   └── duckdb.py        # DuckDB engine with Azure + S3 secret injection
+│   ├── providers/
+│   │   ├── azure.py         # Azure Blob Storage + Table Storage
+│   │   ├── s3.py            # AWS S3
+│   │   └── databricks.py    # Databricks Unity Catalog + SQL Warehouse
+│   └── tools/
+│       └── tools.py         # All 7 MCP tool definitions
+├── tests/
+│   ├── conftest.py          # Fixtures (isolated from real cloud creds)
+│   ├── test_config.py       # Settings unit tests
+│   └── test_tools.py        # Engine + provider tests (mocked)
+├── .github/workflows/
+│   ├── ci.yml               # Lint + test on every PR and push to main
+│   └── release.yml          # Build + publish on version tag push
+├── server.py                # Shim: `python server.py` for local dev
+├── pyproject.toml
+└── .env.example
+```
 
 ---
 

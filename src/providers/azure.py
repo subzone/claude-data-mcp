@@ -65,8 +65,7 @@ async def list_blobs(container: str, prefix: str | None = None, max_results: int
     """List blobs in a container with optional prefix filter."""
     client = _get_blob_client().get_container_client(container)
     blobs = []
-    count = 0
-    for b in client.list_blobs(name_starts_with=prefix, include=["metadata"]):
+    for count, b in enumerate(client.list_blobs(name_starts_with=prefix, include=["metadata"])):
         if count >= max_results:
             break
         blobs.append({
@@ -76,7 +75,6 @@ async def list_blobs(container: str, prefix: str | None = None, max_results: int
             "last_modified": str(b["last_modified"]) if b.get("last_modified") else None,
             "tier": b.get("blob_tier"),
         })
-        count += 1
     return blobs
 
 
@@ -102,7 +100,6 @@ async def query_table(
     """
     client = _get_table_client().get_table_client(table_name)
     entities = []
-    count = 0
 
     query_params: dict = {}
     if filter_query:
@@ -110,13 +107,12 @@ async def query_table(
     if select:
         query_params["select"] = select
 
-    for entity in client.list_entities(**query_params):
+    for count, entity in enumerate(client.list_entities(**query_params)):
         if count >= max_results:
             break
         # Convert entity to plain dict, skip internal Azure metadata keys
         row = {k: v for k, v in entity.items() if not k.startswith("odata.")}
         entities.append(row)
-        count += 1
 
     return entities
 

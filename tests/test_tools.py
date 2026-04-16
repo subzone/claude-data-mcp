@@ -2,9 +2,9 @@
 Tests for MCP tool logic — providers are mocked so no cloud credentials needed.
 All tools are called directly (not via MCP protocol) to keep tests fast.
 """
-import json
-import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 
 # ── discover ──────────────────────────────────────────────────────────────────
@@ -22,8 +22,8 @@ async def test_discover_azure_only(monkeypatch):
         mock_settings.azure_enabled = True
         mock_settings.databricks_enabled = False
 
-        from src.tools.tools import register_tools
         from fastmcp import FastMCP
+        from src.tools.tools import register_tools
 
         mcp = FastMCP(name="test")
         register_tools(mcp)
@@ -119,7 +119,6 @@ async def test_databricks_run_query_mocked(databricks_env):
 @pytest.mark.asyncio
 async def test_databricks_run_query_no_warehouse():
     from src.providers import databricks as db
-    import importlib
     # Ensure no warehouse configured
     with patch("src.providers.databricks.settings") as mock_settings:
         mock_settings.databricks_warehouse_id = ""

@@ -60,7 +60,7 @@ async def list_buckets() -> list[dict]:
         raise RuntimeError(
             "No AWS credentials found. Run 'aws configure', set AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY, "
             "or ensure an IAM role is attached to this environment."
-        )
+        ) from None
 
 
 def _get_bucket_region(bucket: str) -> str:
@@ -93,10 +93,10 @@ async def list_objects(bucket: str, prefix: str | None = None, max_results: int 
     except ClientError as e:
         code = e.response["Error"]["Code"]
         if code == "NoSuchBucket":
-            raise RuntimeError(f"Bucket '{bucket}' not found.")
+            raise RuntimeError(f"Bucket '{bucket}' not found.") from e
         if code in ("AccessDenied", "403"):
             raise RuntimeError(
                 f"Access denied to bucket '{bucket}'. "
                 f"Ensure your identity has s3:ListBucket permission."
-            )
+            ) from e
         raise RuntimeError(f"S3 error: {e}") from e

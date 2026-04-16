@@ -158,7 +158,7 @@ async def run_query(sql: str, warehouse_id: str | None = None) -> list[dict]:
 
     schema = statement.manifest.schema.columns
     columns = [col.name for col in schema]
-    return [dict(zip(columns, row)) for row in result.data_array]
+    return [dict(zip(columns, row, strict=False)) for row in result.data_array]
 
 
 async def sample_table(full_table_name: str, n: int = 25) -> list[dict]:

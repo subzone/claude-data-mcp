@@ -47,6 +47,9 @@ line-length = 100
 select = ["E", "F", "I", "UP", "B", "SIM"]
 ignore = ["E501"]  # line length handled by formatter
 
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
+
 # ── Pytest ────────────────────────────────────────────────────────────────────
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

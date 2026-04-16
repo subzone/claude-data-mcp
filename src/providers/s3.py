@@ -8,6 +8,7 @@ Discovery via boto3 using the default credential chain:
 No config required when running in an environment with valid AWS credentials.
 Blob file queries are handled by DuckDB engine directly.
 """
+
 from __future__ import annotations
 
 import logging
@@ -36,6 +37,7 @@ def _get_s3() -> boto3.client:
 
 
 # ── Discovery ──────────────────────────────────────────────────────────────────
+
 
 async def list_buckets() -> list[dict]:
     """List all S3 buckets accessible to the current identity."""
@@ -71,7 +73,9 @@ def _get_bucket_region(bucket: str) -> str:
         return "unknown"
 
 
-async def list_objects(bucket: str, prefix: str | None = None, max_results: int = 200) -> list[dict]:
+async def list_objects(
+    bucket: str, prefix: str | None = None, max_results: int = 200
+) -> list[dict]:
     """List objects in an S3 bucket with optional prefix filter."""
     s3 = _get_s3()
     kwargs: dict = {"Bucket": bucket, "MaxKeys": min(max_results, 1000)}

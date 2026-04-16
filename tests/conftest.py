@@ -1,4 +1,5 @@
 """Shared fixtures for cloud-data-mcp tests."""
+
 import pytest
 
 
@@ -6,6 +7,7 @@ import pytest
 def reset_duckdb_singleton():
     """Reset the DuckDB connection singleton so each test initialises fresh."""
     import src.engine.duckdb as duckdb_module
+
     duckdb_module._conn = None
     yield
     duckdb_module._conn = None
@@ -15,9 +17,17 @@ def reset_duckdb_singleton():
 def clear_env(monkeypatch):
     """Ensure no real cloud credentials leak into unit tests."""
     for key in [
-        "AZURE_STORAGE_ACCOUNT", "AZURE_TENANT_ID", "AZURE_CLIENT_ID", "AZURE_CLIENT_SECRET",
-        "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_SESSION_TOKEN",
-        "DATABRICKS_HOST", "DATABRICKS_TOKEN", "DATABRICKS_CLIENT_ID", "DATABRICKS_CLIENT_SECRET",
+        "AZURE_STORAGE_ACCOUNT",
+        "AZURE_TENANT_ID",
+        "AZURE_CLIENT_ID",
+        "AZURE_CLIENT_SECRET",
+        "AWS_ACCESS_KEY_ID",
+        "AWS_SECRET_ACCESS_KEY",
+        "AWS_SESSION_TOKEN",
+        "DATABRICKS_HOST",
+        "DATABRICKS_TOKEN",
+        "DATABRICKS_CLIENT_ID",
+        "DATABRICKS_CLIENT_SECRET",
         "DATABRICKS_WAREHOUSE_ID",
     ]:
         monkeypatch.delenv(key, raising=False)

@@ -2,6 +2,7 @@
 Cloud Data MCP — Tool Definitions
 All 7 MCP tools registered here and imported by server.py.
 """
+
 from __future__ import annotations
 
 import json
@@ -37,6 +38,7 @@ Returns:
 
         if settings.azure_enabled:
             from src.providers import azure
+
             try:
                 containers = await azure.list_containers()
                 tables = await azure.list_tables()
@@ -44,7 +46,9 @@ Returns:
                 if include_blobs and containers:
                     entry["sample_blobs"] = {}
                     for c in containers[:3]:  # preview first 3 containers only
-                        blobs = await azure.list_blobs(c["name"], prefix=blob_prefix, max_results=20)
+                        blobs = await azure.list_blobs(
+                            c["name"], prefix=blob_prefix, max_results=20
+                        )
                         entry["sample_blobs"][c["name"]] = blobs
                 result["azure"] = entry
             except Exception as e:
@@ -52,6 +56,7 @@ Returns:
 
         try:
             from src.providers import s3
+
             buckets = await s3.list_buckets()
             result["s3"] = {"buckets": buckets}
         except Exception as e:
@@ -59,6 +64,7 @@ Returns:
 
         if settings.databricks_enabled:
             from src.providers import databricks
+
             try:
                 catalogs = await databricks.list_catalogs()
                 result["databricks"] = {"catalogs": catalogs}
@@ -89,6 +95,7 @@ Examples:
 
         if provider == "databricks":
             from src.providers.databricks import describe_table
+
             info = await describe_table(path)
             return json.dumps(info["columns"], default=str, indent=2)
 
@@ -97,13 +104,17 @@ Examples:
             if len(parts) != 2:
                 return "Error: Azure path must be 'container/blob_path'"
             container, blob = parts
-            duckdb_path = blob_to_duckdb_path("azure", settings.azure_storage_account, container, blob)
+            duckdb_path = blob_to_duckdb_path(
+                "azure", settings.azure_storage_account, container, blob
+            )
         elif provider == "s3":
             parts = path.split("/", 1)
             if len(parts) != 2:
                 return "Error: S3 path must be 'bucket/key'"
             bucket, key = parts
-            duckdb_path = blob_to_duckdb_path("s3", bucket, "", key).replace("s3:///", f"s3://{bucket}/")
+            duckdb_path = blob_to_duckdb_path("s3", bucket, "", key).replace(
+                "s3:///", f"s3://{bucket}/"
+            )
         else:
             return f"Error: Unknown provider '{provider}'. Use 'azure', 's3', or 'databricks'."
 
@@ -152,16 +163,21 @@ Examples:
                 rows = duckdb_query(sql, limit=max_rows)
             elif provider == "databricks":
                 from src.providers.databricks import run_query as db_query
+
                 rows = await db_query(sql, warehouse_id=warehouse_id)
                 rows = rows[:max_rows]
             else:
                 return f"Error: Unknown provider '{provider}'. Use 'azure', 's3', or 'databricks'."
 
-            return json.dumps({
-                "row_count": len(rows),
-                "rows": rows,
-                "truncated": len(rows) >= max_rows,
-            }, default=str, indent=2)
+            return json.dumps(
+                {
+                    "row_count": len(rows),
+                    "rows": rows,
+                    "truncated": len(rows) >= max_rows,
+                },
+                default=str,
+                indent=2,
+            )
 
         except Exception as e:
             return json.dumps({"error": str(e)}, indent=2)
@@ -196,6 +212,7 @@ Returns rows as JSON array."""
         if not settings.azure_enabled:
             return "Error: Azure not configured. Set AZURE_STORAGE_ACCOUNT."
         from src.providers.azure import query_table
+
         try:
             rows = await query_table(table_name, filter_query, select, max_results)
             return json.dumps({"row_count": len(rows), "rows": rows}, default=str, indent=2)
@@ -238,10 +255,12 @@ Returns rows as JSON array."""
 
             elif provider == "azure_table":
                 from src.providers.azure import sample_table
+
                 rows = await sample_table(path, n)
 
             elif provider == "databricks":
                 from src.providers.databricks import sample_table
+
                 rows = await sample_table(path, n)
 
             else:
@@ -275,6 +294,7 @@ Args:
         if not settings.databricks_enabled:
             return "Error: Databricks not configured. Set DATABRICKS_HOST."
         from src.providers import databricks
+
         try:
             if level == "catalogs":
                 result = await databricks.list_catalogs()
@@ -321,6 +341,7 @@ Returns:
         if not settings.databricks_enabled:
             return "Error: Databricks not configured. Set DATABRICKS_HOST."
         from src.providers.databricks import describe_table as _describe
+
         try:
             result = await _describe(full_table_name)
             return json.dumps(result, default=str, indent=2)

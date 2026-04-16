@@ -8,6 +8,7 @@ Auth:
   - OAuth M2M (DATABRICKS_CLIENT_ID + DATABRICKS_CLIENT_SECRET)
   - Azure Managed Identity / az login (when hosted on Azure)
 """
+
 from __future__ import annotations
 
 import logging
@@ -46,6 +47,7 @@ def _get_client() -> WorkspaceClient:
 
 
 # ── Unity Catalog ──────────────────────────────────────────────────────────────
+
 
 async def list_catalogs() -> list[dict]:
     """List all Unity Catalog catalogs accessible to the current identity."""
@@ -126,6 +128,7 @@ async def describe_table(full_table_name: str) -> dict:
 
 
 # ── SQL Warehouse ──────────────────────────────────────────────────────────────
+
 
 async def run_query(sql: str, warehouse_id: str | None = None) -> list[dict]:
     """

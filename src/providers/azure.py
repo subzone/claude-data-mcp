@@ -4,6 +4,7 @@ Discovery: containers and blobs via Azure SDK (DefaultAzureCredential).
 Table Storage: OData queries via azure-data-tables.
 Blob file queries are handled by DuckDB engine directly.
 """
+
 from __future__ import annotations
 
 import logging
@@ -47,38 +48,46 @@ def _get_table_client() -> TableServiceClient:
 
 # ── Discovery ──────────────────────────────────────────────────────────────────
 
+
 async def list_containers() -> list[dict]:
     """List all blob containers in the storage account."""
     client = _get_blob_client()
     containers = []
     for c in client.list_containers(include_metadata=True):
-        containers.append({
-            "name": c["name"],
-            "last_modified": str(c["last_modified"]) if c.get("last_modified") else None,
-            "public_access": c.get("public_access"),
-            "metadata": c.get("metadata") or {},
-        })
+        containers.append(
+            {
+                "name": c["name"],
+                "last_modified": str(c["last_modified"]) if c.get("last_modified") else None,
+                "public_access": c.get("public_access"),
+                "metadata": c.get("metadata") or {},
+            }
+        )
     return containers
 
 
-async def list_blobs(container: str, prefix: str | None = None, max_results: int = 200) -> list[dict]:
+async def list_blobs(
+    container: str, prefix: str | None = None, max_results: int = 200
+) -> list[dict]:
     """List blobs in a container with optional prefix filter."""
     client = _get_blob_client().get_container_client(container)
     blobs = []
     for count, b in enumerate(client.list_blobs(name_starts_with=prefix, include=["metadata"])):
         if count >= max_results:
             break
-        blobs.append({
-            "name": b["name"],
-            "size_bytes": b["size"],
-            "content_type": b.get("content_settings", {}).get("content_type"),
-            "last_modified": str(b["last_modified"]) if b.get("last_modified") else None,
-            "tier": b.get("blob_tier"),
-        })
+        blobs.append(
+            {
+                "name": b["name"],
+                "size_bytes": b["size"],
+                "content_type": b.get("content_settings", {}).get("content_type"),
+                "last_modified": str(b["last_modified"]) if b.get("last_modified") else None,
+                "tier": b.get("blob_tier"),
+            }
+        )
     return blobs
 
 
 # ── Table Storage ──────────────────────────────────────────────────────────────
+
 
 async def list_tables() -> list[str]:
     """List all tables in Azure Table Storage."""

@@ -3,6 +3,7 @@ Cloud Data MCP — DuckDB Query Engine
 Provides authenticated DuckDB access to Azure Blob Storage and AWS S3.
 Secrets are injected once at startup using DuckDB's secret manager.
 """
+
 from __future__ import annotations
 
 import logging
@@ -76,7 +77,9 @@ def _get_conn() -> duckdb.DuckDBPyConnection:
             """)
             logger.info("DuckDB: S3 secret (credential chain) configured")
         except Exception as exc:
-            logger.warning("DuckDB: S3 credential chain unavailable — S3 queries will fail: %s", exc)
+            logger.warning(
+                "DuckDB: S3 credential chain unavailable — S3 queries will fail: %s", exc
+            )
 
     _conn = conn
     return _conn
@@ -102,10 +105,7 @@ def infer_schema(path: str) -> list[dict]:
     """
     conn = _get_conn()
     rel = conn.execute(f"DESCRIBE FROM '{path}' LIMIT 0")
-    return [
-        {"column_name": row[0], "column_type": row[1]}
-        for row in rel.fetchall()
-    ]
+    return [{"column_name": row[0], "column_type": row[1]} for row in rel.fetchall()]
 
 
 def blob_to_duckdb_path(
@@ -121,10 +121,7 @@ def blob_to_duckdb_path(
     S3:    s3://<bucket>/<key>
     """
     if provider == "azure":
-        return (
-            f"az://{account_or_bucket}.blob.core.windows.net"
-            f"/{container_or_prefix}/{blob_key}"
-        )
+        return f"az://{account_or_bucket}.blob.core.windows.net/{container_or_prefix}/{blob_key}"
     if provider == "s3":
         return f"s3://{account_or_bucket}/{blob_key}"
     raise ValueError(f"Unknown provider for DuckDB path: {provider!r}")

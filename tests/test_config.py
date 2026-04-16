@@ -1,4 +1,5 @@
 """Tests for src/config.py settings loading."""
+
 from src.config import Settings
 
 

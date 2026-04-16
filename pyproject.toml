@@ -47,6 +47,9 @@ line-length = 100
 select = ["E", "F", "I", "UP", "B", "SIM"]
 ignore = ["E501"]  # line length handled by formatter
 
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["I001"]  # inline imports inside test functions are exempt from sort order
+
 [tool.ruff.lint.isort]
 known-first-party = ["src"]
 

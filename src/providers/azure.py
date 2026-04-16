@@ -5,10 +5,13 @@ Table Storage: OData queries via azure-data-tables.
 Blob file queries are handled by DuckDB engine directly.
 """
 from __future__ import annotations
+
 import logging
+
+from azure.data.tables import TableServiceClient
 from azure.identity import DefaultAzureCredential
 from azure.storage.blob import BlobServiceClient
-from azure.data.tables import TableServiceClient
+
 from src.config import settings
 
 logger = logging.getLogger(__name__)

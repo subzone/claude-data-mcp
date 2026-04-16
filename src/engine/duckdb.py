@@ -4,8 +4,11 @@ Provides authenticated DuckDB access to Azure Blob Storage and AWS S3.
 Secrets are injected once at startup using DuckDB's secret manager.
 """
 from __future__ import annotations
+
 import logging
+
 import duckdb
+
 from src.config import settings
 
 logger = logging.getLogger(__name__)
@@ -89,7 +92,7 @@ def run_query(sql: str, limit: int | None = None) -> list[dict]:
     effective_sql = f"SELECT * FROM ({sql}) __q LIMIT {limit}" if limit else sql
     rel = conn.execute(effective_sql)
     columns = [desc[0] for desc in rel.description]
-    return [dict(zip(columns, row)) for row in rel.fetchall()]
+    return [dict(zip(columns, row, strict=False)) for row in rel.fetchall()]
 
 
 def infer_schema(path: str) -> list[dict]:

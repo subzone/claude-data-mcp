@@ -9,9 +9,12 @@ No config required when running in an environment with valid AWS credentials.
 Blob file queries are handled by DuckDB engine directly.
 """
 from __future__ import annotations
+
 import logging
+
 import boto3
 from botocore.exceptions import ClientError, NoCredentialsError
+
 from src.config import settings
 
 logger = logging.getLogger(__name__)

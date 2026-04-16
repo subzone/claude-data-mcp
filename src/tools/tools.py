@@ -3,11 +3,15 @@ Cloud Data MCP — Tool Definitions
 All 7 MCP tools registered here and imported by server.py.
 """
 from __future__ import annotations
+
 import json
 import logging
+
 from fastmcp import FastMCP
+
 from src.config import settings
-from src.engine.duckdb import run_query as duckdb_query, infer_schema, blob_to_duckdb_path
+from src.engine.duckdb import blob_to_duckdb_path, infer_schema
+from src.engine.duckdb import run_query as duckdb_query
 
 logger = logging.getLogger(__name__)
 

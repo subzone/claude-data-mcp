@@ -3,12 +3,15 @@ Cloud Data MCP — application entry point (lives inside the src package).
 server.py at the repo root is a thin shim that calls this.
 """
 from __future__ import annotations
+
 import logging
 import os
 import sys
+
 from fastmcp import FastMCP
-from src.tools.tools import register_tools
+
 from src.config import settings
+from src.tools.tools import register_tools
 
 logging.basicConfig(
     level=logging.INFO,

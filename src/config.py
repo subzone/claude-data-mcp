@@ -3,6 +3,7 @@ Cloud Data MCP — Settings
 Loaded once at startup from environment variables (or a .env file).
 """
 from __future__ import annotations
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 

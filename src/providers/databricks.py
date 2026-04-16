@@ -9,9 +9,12 @@ Auth:
   - Azure Managed Identity / az login (when hosted on Azure)
 """
 from __future__ import annotations
+
 import logging
+
 from databricks.sdk import WorkspaceClient
 from databricks.sdk.service.sql import StatementState
+
 from src.config import settings
 
 logger = logging.getLogger(__name__)

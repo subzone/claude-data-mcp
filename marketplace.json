@@ -1,0 +1,35 @@
+{
+  "name": "cloud-data-mcp",
+  "description": "Query Azure Storage, AWS S3, and Databricks from Claude using natural language. Powered by DuckDB — no data warehouse required.",
+  "version": "1.0.0",
+  "author": {
+    "name": "YOUR_NAME",
+    "github": "YOUR_GITHUB_USERNAME",
+    "url": "https://github.com/YOUR_GITHUB/cloud-data-mcp"
+  },
+  "license": "MIT",
+  "plugins": [
+    {
+      "name": "cloud-data-mcp",
+      "description": "Query Azure Storage, S3, and Databricks from Claude",
+      "type": "mcp",
+      "mcp": {
+        "transport": "stdio",
+        "command": "uvx",
+        "args": ["cloud-data-mcp"],
+        "env": {
+          "AZURE_STORAGE_ACCOUNT": "",
+          "AZURE_TENANT_ID": "",
+          "AZURE_CLIENT_ID": "",
+          "AZURE_CLIENT_SECRET": "",
+          "AWS_REGION": "us-east-1",
+          "AWS_ACCESS_KEY_ID": "",
+          "AWS_SECRET_ACCESS_KEY": "",
+          "DATABRICKS_HOST": "",
+          "DATABRICKS_TOKEN": "",
+          "DATABRICKS_WAREHOUSE_ID": ""
+        }
+      }
+    }
+  ]
+}

@@ -3,7 +3,11 @@
 > Query Azure Storage, AWS S3, and Databricks from Claude using natural language.
 > Powered by DuckDB — no data warehouse required.
 
-**Author:** [YOUR_NAME](https://github.com/YOUR_GITHUB)
+[![CI](https://github.com/subzone/cloud-data-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/subzone/cloud-data-mcp/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/cloud-data-mcp)](https://pypi.org/project/cloud-data-mcp/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+**Author:** Milenko Mitrovic (https://github.com/subzone)
 **License:** MIT
 
 ---
@@ -131,11 +135,74 @@ TRANSPORT=http PORT=8000 python server.py
 
 The server must be publicly reachable from Anthropic's infrastructure.
 
-## Claude Code (Plugin)
+## Claude Code (local MCP server)
 
 ```bash
-/plugin install https://github.com/YOUR_GITHUB/cloud-data-mcp
+# Option A — from PyPI (recommended, no clone needed)
+claude mcp add cloud-data-mcp \
+  -e AZURE_STORAGE_ACCOUNT=mystorageaccount \
+  -e DATABRICKS_HOST=https://adb-xxxx.azuredatabricks.net \
+  -e DATABRICKS_TOKEN=dapi... \
+  -- uvx cloud-data-mcp
+
+# Option B — from source (for development)
+git clone https://github.com/subzone/cloud-data-mcp
+cd cloud-data-mcp && pip install -e .
+claude mcp add cloud-data-mcp \
+  -e AZURE_STORAGE_ACCOUNT=mystorageaccount \
+  -- python /path/to/cloud-data-mcp/server.py
 ```
+
+Or add manually to `~/.claude.json` (or your project's `.claude/settings.json`):
+
+```json
+{
+  "mcpServers": {
+    "cloud-data-mcp": {
+      "command": "uvx",
+      "args": ["cloud-data-mcp"],
+      "env": {
+        "AZURE_STORAGE_ACCOUNT": "mystorageaccount",
+        "DATABRICKS_HOST": "https://adb-xxxx.azuredatabricks.net",
+        "DATABRICKS_TOKEN": "dapi..."
+      }
+    }
+  }
+}
+```
+
+Restart Claude Code after making changes. Run `claude mcp list` to confirm it appears.
+
+---
+
+## Development
+
+```bash
+# Install dev dependencies
+pip install -e ".[dev]"
+
+# Lint
+ruff check . && ruff format --check .
+
+# Test (no cloud credentials required)
+pytest -v
+
+# Run the server locally for manual testing
+python server.py
+```
+
+**Releasing a new version:**
+
+```bash
+git tag v1.0.1
+git push origin v1.0.1
+```
+
+This triggers the Release workflow which:
+1. Runs tests
+2. Builds the wheel
+3. Creates a GitHub Release with changelog
+4. Publishes to PyPI via OIDC trusted publishing (one-time setup on pypi.org)
 
 ---
 
@@ -161,4 +228,3 @@ Your name and GitHub will be shown as the author in the directory.
 | **Performance** | DuckDB column pruning, predicate pushdown, range reads |
 | **Cost** | Queries read only referenced columns from Parquet — minimal egress |
 | **Operations** | Structured logging, provider health in `discover` output |
-# claude-data-mcp
